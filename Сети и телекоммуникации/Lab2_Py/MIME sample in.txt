@@ -1,0 +1,14 @@
+    mimeMul = MIMEMultipart()
+    mimeMul['To'] = f'{User.User}'
+    mimeMul['From'] = f'{target}'
+
+    mimeMul['Subject'] = subject
+
+    mimeMul.attach(MIMEText(f'{content}'))
+
+    # Добавляем файл
+    with open('text.txt', 'r') as file:
+        content = file.read()
+    attach = MIMEApplication(content.encode('utf-8'))
+    attach.add_header('Content-Disposition', 'attachment', filename='text.txt')
+    mimeMul.attach(attach)

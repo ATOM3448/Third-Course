@@ -1,0 +1,27 @@
+Content-Type: multipart/mixed; boundary="===============НОМЕР BOUNDARY=="
+MIME-Version: 1.0
+To: Qweru2003@gmail.com
+From: 20gurulyov2003203@gmail.com
+# Заголовок оформляется =?utf-8?b?ЗАГОЛОВОК?=
+Subject: =?utf-8?b?0JA=?=
+
+--===============НОМЕР BOUNDARY==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+# Содержимое письма ("А")
+0JA=
+
+--===============НОМЕР BOUNDARY==
+Content-Type: application/octet-stream
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="text.txt"
+
+# Ниже содержание текстовика text.txt
+VGhpcyBpcyBhIHRleHQgZmlsZSBmb3IgbGFiIG9mIFdhVCdzLiBTb210aGluZyBjb250ZW50OgpC
+TEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFCTEFC
+TEE=
+
+--===============НОМЕР BOUNDARY==--
