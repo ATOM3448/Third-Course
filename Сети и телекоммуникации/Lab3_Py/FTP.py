@@ -77,7 +77,10 @@ def send_list(s:socket, mode:int = 0):
         lst[i].append(matches[3])                               # GID
         lst[i].append(matches[4])                               # Размер
         lst[i].append(matches[5] + matches[6] + matches[7])     # Дата и время модификации
-        lst[i].append(matches[-1])                              # Имя
+        if matches.count('->') != 0:
+            lst[i].append(matches[-3])                          # Имя для ссылки
+        else:    
+            lst[i].append(matches[-1])                          # Имя
             
     return lst
 
