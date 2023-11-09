@@ -29,18 +29,14 @@ if(answer[1:3] != 'OK'):
     print("Some err")
 
 # Получаем письмо
-cSock.send("LIST 1\r\n".encode('ascii'))
-answer = cSock.recv(1024).decode('ascii')
-size = answer[6:-2:1]
-
-answer = ''.encode('ascii')
+answer = ''
 cSock.send("RETR 1\r\n".encode('ascii'))
-for i in range(int(size)+24):
-    answer += cSock.recv(1)
+while answer[-5::] != '\r\n.\r\n':
+    answer += cSock.recv(1024).decode()
 
 norm = []
 
-for i in answer.decode('utf-8').split('\r\n'):
+for i in answer.split('\r\n'):
     norm.append(i)
 
 sub = 0
