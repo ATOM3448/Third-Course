@@ -1,170 +1,196 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
-// Authorization Code Flow (PKCE)
-// Client credentials flow Auth2.0
 
-namespace Lab5
+namespace MyServer
 {
     class Server
     {
-        // Метод чтения из потока
-        private static string Recive(in Socket soc)
+        static private string mesEnd = "\r\n";
+        static private string errMes = "Access denied";
+        static private string[] tokens = ["hbogmlakjg.jgbksfmgldmslmlbmslm.hkjgbkvahjghrkja",
+                                          "flmbmjslgj.dedlbldmkhfdfgafhlfl.hbsglfkjgioj5oti"];
+        static private string[] users = ["User1",
+                                         "User2"];
+        static private string[] passwords = ["5567",
+                                             "2234"];
+        static private string[] secrets = ["one",
+                                           "two"];
+        // Чтение из потока указанное количество сообщений
+        private static string[] Reception(in Socket _soc, int _count = 1)
         {
-            var stream = new NetworkStream(soc);
-            var responceData = new byte[1024];
-            var responce = new StringBuilder();
-
+            byte[] responceData = new byte[1024];
+            StringBuilder responce = new StringBuilder();
             int bytes;
-            while (true)
+
+            do
             {
-                bytes = stream.Read(responceData);
+                bytes = _soc.Receive(responceData);
                 responce.Append(Encoding.UTF8.GetString(responceData, 0, bytes));
 
-                if (responce.ToString().EndsWith("\r\n"))
-                    break;
-            }
 
-            return responce.ToString();
+                // Прекращаем прием, если доступ отклонен
+                if (responce.ToString().Contains(errMes))
+                {
+                    Console.WriteLine("Что-то пошло не так. Доступ отклонен.");
+                    _soc.Close();
+                    Console.ReadKey();
+                    return [errMes];
+                }
+            } while (responce.ToString().Split(mesEnd).Length < _count+1);
+
+            return responce.ToString().Split(mesEnd).SkipLast(1).ToArray();
+        }
+
+        // Отправка в поток сообщений
+        private static void Send(in Socket _soc, string[] _messages)
+        {
+            foreach (string message in _messages)
+            {
+                _soc.Send(Encoding.UTF8.GetBytes(message + mesEnd));
+            }
         }
 
         public static void Main(string[] args)
         {
-            string user = "Atom";
-            string myId = "4245";
-            string mySecret = "skdgmgslfbnslskf";
-            string pass = "12345";
-            string token = "NzU3NTYzMDQ2MjU1MjYzNzU0.GWNObb.wRdHivgATxo3ngoNPCvPXCpqZmDE5M6JVvtSbY";
-            string endMes = "\r\n";
-
-            using (Socket authServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+            using (Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
-                authServer.Bind(new IPEndPoint(IPAddress.Any, 9090));
-                authServer.Listen(1000);
+                server.Bind(new IPEndPoint(IPAddress.Any, 6666));
+                server.Listen(10);
 
-                Console.WriteLine("Сервер авторизации запущен успешно. Ожидание подключений...");
+                Console.WriteLine("Сервер запущен.");
 
-                using (Socket client = authServer.Accept())
+                using (Socket client = server.Accept())
                 {
-                    Console.WriteLine($"К серверу авторизации подключился клиент {client.RemoteEndPoint}");
-                    Console.WriteLine($"Клиент должен получить токен: {token}");
+                    Console.WriteLine($"Подключился: {client.RemoteEndPoint}");
 
-                    // Получаем метод авторизации
-                    byte mode = Convert.ToByte(Recive(client).Replace("\r\n", ""));
-
-                    switch (mode)
+                    string[] answers = Reception(in client);
+                    if (answers[0] == errMes)
                     {
-                        // Authorization Code Flow (PKCE)
-                        case 1:
-                            // Читаем код авторизации, испытания, метод преобразывания
-                            string responce = Recive(client);
-
-                            var parts = responce.Split("\r\n");
-                            while (parts.Length < 4)
-                            {
-                                responce += Recive(client);
-
-                                parts = responce.Split("\r\n");
-                            }
-
-                            int authCode = Convert.ToInt32(parts[0]);
-
-                            string codeChallenge = parts[1];
-
-                            string method = parts[2];
-
-                            // Запрашиваем логин и пароль
-                            Console.WriteLine("Введите логин:");
-                            string inUser = Console.ReadLine();
-
-                            Console.WriteLine("Введите пароль:");
-                            string inPass = Console.ReadLine();
-
-                            if ((user != inUser) || (pass != inPass))
-                            {
-                                Console.WriteLine("Неверный логин или пароль");
-                                Console.ReadKey();
-                                return;
-                            }
-
-                            // Отправляем код авторизации
-                            string message = authCode.ToString() + endMes;
-
-                            client.Send(Encoding.UTF8.GetBytes(message));
-
-                            // Получаем код верификации
-                            responce = Recive(client);
-                            parts = responce.Split("\r\n");
-                            while (parts.Length < 2)
-                            {
-                                responce += Recive(client);
-
-                                parts = responce.Split("\r\n");
-                            }
-
-                            authCode = Convert.ToInt32(parts[0]);
-
-                            string codeVerifer = parts[1];
-
-                            // Сравнение кода верификации и кода испытания
-                            string codeToCheck;
-                            byte[] bytes;
-
-                            using (var sha256 = SHA256.Create())
-                            {
-                                bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(codeVerifer));
-                            }
-
-                            codeToCheck = Convert.ToBase64String(bytes).Replace('+', '-').Replace('/', '_').Replace('=', ' ');
-
-                            if (codeToCheck != codeChallenge)
-                            {
-                                Console.WriteLine("Неверный код верификации");
-                                Console.ReadKey();
-                                return;
-                            }
-
-                            // Отправка токена
-                            message = token + endMes;
-                            client.Send(Encoding.UTF8.GetBytes(message));
-                            break;
-
-                        // Client credentials flow Auth2.0
-                        case 2:
-                            // Получаем id и секрет
-                            responce = Recive(client);
-
-                            parts = responce.Split("\r\n");
-                            while (parts.Length < 2)
-                            {
-                                responce += Recive(client);
-
-                                parts = responce.Split("\r\n");
-                            }
-
-                            // Сравниваем полученные и хранимые id и секрет
-                            if (!((parts[0] == myId) && (parts[1] == mySecret)))
-                            {
-                                Console.WriteLine("Неверные id или секрет");
-                                Console.ReadKey();
-                                return;
-                            }
-
-                            // Отправка токена
-                            message = token + endMes;
-                            client.Send(Encoding.UTF8.GetBytes(message));
-                            break;
-
-                        default:
-                            Console.WriteLine("Wrong input");
-                            break;
+                        server.Close();
+                        return;
                     }
 
-                    Console.ReadKey();
+                    byte method = Convert.ToByte(answers[0]);
+
+                    // Отправляем сообщение о готовности
+                    Send(in client, ["OK"]);
+                    Console.WriteLine("Отправлено сообщение о готовности.");
+
+                    if (method == 1)
+                    {
+                        Console.WriteLine("Выбран первый метод.");
+
+                        // Получаем код авторизации, код испытания и метод преобразования
+                        answers = Reception(in client, 3);
+
+                        int authCode = Convert.ToInt32(answers[0]);
+                        string challenge = answers[1];
+                        Console.WriteLine("Получены код авторизации, код испытания и метод преобразования.");
+
+                        if (answers[2] != "sha256")
+                        {
+                            Console.WriteLine("Получен неизвестный метод преобразования");
+                            Send(in client, [errMes]);
+                            client.Close();
+                            server.Close();
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        // Запрашиваем пользователя и пароль
+                        Console.WriteLine("Введите логин:");
+                        string user = Console.ReadLine();
+
+                        Console.WriteLine("Введите пароль:");
+                        string password = Console.ReadLine();
+
+                        int userIndex = Array.IndexOf(users, user);
+
+                        if (!((userIndex == Array.IndexOf(passwords, password)) && (userIndex != -1)))
+                        {
+                            Console.WriteLine("Введен неверные пользователь или пароль.");
+                            Send(in client, [errMes]);
+                            client.Close();
+                            server.Close();
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        // Отправляем код авторизации
+                        Send(in client, [authCode.ToString()]);
+                        Console.WriteLine("Отправлен код авторизации.");
+
+                        // Получаем код верификации
+                        answers = Reception(in client, 2);
+
+                        if (answers[0] == errMes)
+                        {
+                            server.Close();
+                            return;
+                        }
+
+                        if (answers[0] != authCode.ToString())
+                        {
+                            Send(in client, [errMes]);
+                            client.Close();
+                            server.Close();
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        Console.WriteLine("Получен код верификации.");
+
+                        // Проверяем корректности кода
+                        byte[] bytes;
+                        using (var sha256 = SHA256.Create())
+                        {
+                            bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(answers[1]));
+                        }
+
+                        if (Convert.ToBase64String(bytes).Replace('+', '-').Replace('/', '_').Replace('=', ' ') != challenge)
+                        {
+                            Console.WriteLine("Коды не совпадают.");
+                            Send(in client, [errMes]);
+                            client.Close();
+                            server.Close();
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        //Отправляем токен
+                        Send(in client, [tokens[userIndex]]);
+                        Console.WriteLine("Токен отправлен.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Выбран второй метод.");
+
+                        // Получаем пользователя (id) и секрет
+                        answers = Reception(in client, 2);
+                        Console.WriteLine("Получены id и секрет.");
+
+                        // Проверяем пользователя (id) и секрет
+                        int userIndex = Array.IndexOf(users, answers[0]);
+
+                        if (!((userIndex == Array.IndexOf(secrets, answers[1])) && (userIndex != -1)))
+                        {
+                            Console.WriteLine("Получены неверные id или секрет.");
+                            Send(in client, [errMes]);
+                            client.Close();
+                            server.Close();
+                            Console.ReadKey();
+                            return;
+                        }
+
+                        // Отправляем токен
+                        Send(in client, [tokens[userIndex]]);
+                        Console.WriteLine("Токен отправлен.");
+                    }
                 }
             }
+            Console.ReadKey();
         }
     }
 }
