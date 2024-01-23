@@ -1,0 +1,26 @@
+# 1. Получить полные сведения обо всех заказах заданного клиента.
+
+SELECT * FROM client_order WHERE code_c = {X};
+
+# 2. Получить коды и даты исполнения заказов, включающих заданный товар.
+
+SELECT client_order.code_z, client_order.del_dt 
+	FROM client_order 
+	JOIN ord_gd ON client_order.code_z = ord_gd.code_z 
+	JOIN goods ON goods.art = ord_gd.art 
+		WHERE name_g = '{X}';
+
+# 3. Подсчитать среднюю цену заказа без учёта стоимости доставки.
+
+SELECT AVG (ord_gd.qt::numeric * goods.price_g::numeric)::money
+	FROM ord_gd 
+	JOIN goods ON goods.art = ord_gd.art;
+
+# 4. Для каждого клиента получить полную стоимость каждого его заказа с учётом стоимости доставки.
+
+SELECT client_order.code_c, client_order.code_z, (SUM(ord_gd.qt::numeric * goods.price_g::numeric) + client_order.price_d::numeric)::money AS cost
+	FROM client_order 
+	JOIN ord_gd ON client_order.code_z = ord_gd.code_z 
+	JOIN goods ON goods.art = ord_gd.art
+		GROUP BY client_order.code_c, client_order.code_z
+		ORDER BY client_order.code_c, client_order.code_z;

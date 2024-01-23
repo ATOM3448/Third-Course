@@ -1,0 +1,35 @@
+# --- ДАННЫЕ ДЛЯ ТАБЛИЦ СОЗДАНЫХ pgAdmin ---
+
+# client_order
+INSERT INTO client_order VALUES('AA11 11-1', 1, '20.09.2003', 'Мокрушина, 1А, 51', '30.09.2003', 1000),
+('AA11 11-2', 2, '21.09.2003', 'Мокрушина, 1А, 52', '20.10.2003', 2000),
+('AA11 11-3', 3, '22.09.2003', 'Мокрушина, 1А, 53', '30.10.2003', 3000),
+('AA11 11-4', 4, '23.09.2003', 'Мокрушина, 1А, 54', '20.11.2003', 4000),
+('AA11 11-5', 5, '24.09.2003', 'Мокрушина, 1А, 55', '30.11.2003', 989);
+
+# ord_gd
+INSERT INTO ord_gd VALUES('AA11 11-1', '000000000000', 100),
+('AA11 11-2', '000000000001', 20),
+('AA11 11-3', '000000000002', 20),
+('AA11 11-4', '000000000003', 200),
+('AA11 11-5', '000000000004', 10);
+
+# --- Данные на корректность ограничений ---
+
+# client_order
+INSERT INTO client_order(code_z) VALUES('AA11 11-1');
+
+INSERT INTO client_order(code_z) VALUES('AA11111');
+
+UPDATE client_order SET code_c = 24 WHERE code_z = 'AA11 11-1';
+
+UPDATE client_order SET addr_d = 'Мокрушина1А51' WHERE code_z = 'AA11 11-1';
+
+UPDATE client_order SET price_d = '-42' WHERE code_z = 'AA11 11-1';
+
+# ord_gd
+INSERT INTO ord_gd(code_z, art) VALUES('AA11 11-1', '000000000000');
+
+INSERT INTO ord_gd(code_z, art) VALUES('AA11 11-1', '000000000358');
+
+UPDATE ord_gd SET qt = -24 WHERE code_z = 'AA11 11-1' AND art = '000000000000';
