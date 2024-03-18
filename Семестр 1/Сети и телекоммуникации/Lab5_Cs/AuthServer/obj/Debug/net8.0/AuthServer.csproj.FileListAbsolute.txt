@@ -1,0 +1,14 @@
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\bin\Debug\net8.0\AuthServer.exe
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\bin\Debug\net8.0\AuthServer.deps.json
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\bin\Debug\net8.0\AuthServer.runtimeconfig.json
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\bin\Debug\net8.0\AuthServer.dll
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\bin\Debug\net8.0\AuthServer.pdb
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\obj\Debug\net8.0\AuthServer.GeneratedMSBuildEditorConfig.editorconfig
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\obj\Debug\net8.0\AuthServer.AssemblyInfoInputs.cache
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\obj\Debug\net8.0\AuthServer.AssemblyInfo.cs
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\obj\Debug\net8.0\AuthServer.csproj.CoreCompileInputs.cache
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\obj\Debug\net8.0\AuthServer.dll
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\obj\Debug\net8.0\refint\AuthServer.dll
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\obj\Debug\net8.0\AuthServer.pdb
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\obj\Debug\net8.0\AuthServer.genruntimeconfig.cache
+C:\MyFolders\Учёба\Лабы и подобное\3 Курс\1 Семестр\WaT\Lab5_Cs\AuthServer\obj\Debug\net8.0\ref\AuthServer.dll
